@@ -1,0 +1,35 @@
+$color-0: #333;
+$color-1: #3A9AD9;
+$color-2: #354458;
+$color-3: #28A8A1;
+
+body{
+	background-color: $color-2;
+	color: #fff;
+}
+
+#chatApp{
+	.row:first-of-type{
+		background-color: $color-1;
+	}
+
+	.users-list{
+		background-color: $color-3;
+		min-height: 400px;
+	}
+
+	.messages-list{
+		
+	}
+
+	.user-input{
+		margin-top: 20px;
+		float: right;
+
+		input{
+			height: 38px;
+			margin-right: 10px;
+			color: $color-0;
+		}
+	}
+}
