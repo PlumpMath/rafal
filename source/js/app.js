@@ -48,69 +48,79 @@ class Manager extends React.Component{
 		this._connectToServer();
 	}
 
-
 	_connectToServer(){
 		this.peer = new Peer(this.userName, { host: location.hostname, port: 9000, path: '/chat'});
-
 		this.peer.on('connection', (conn) => {
-			// console.log('connection: ', conn);
 			conn.on('open', () => {
 				console.log('on connection -> open: ', conn);
+                this.setState({
+                    connectedUserName: conn.peer
+                });
 
 				conn.on('data', (data) => {
-					// console.log('on data -> data: ', data);
 					this.getMessage(data);
-				})
+				});
 			});
 		});
 	}
 
-
-
 	changeConnectedUser(peerID){
-		console.log('change user: ', peerID);
-
 		var conn = this.peer.connect(peerID);
 		conn.on('open', () => {
-			console.log('on open -> send message');
+            console.log('changed user: ', conn.peer);
 			this.connectedPeer = conn;
 
 			this.setState({
 				connectedUserName: conn.peer
 			});
-			console.log('connectedUserName: ', this.state.connectedUserName);
-
-
-			// Send messages
-			// conn.send('Hello!');
-			this.sendMessage('hi how are you!?');
 		});
 	}
 
 	sendMessage(message){
-		console.log('sendMessage: ', message);
 		this.connectedPeer.send({
-			userName: this.userName,
-			message: message
+			message: message,
+			userName: this.userName
 		});
+
+        this.addMessageToHistory(message);
 	}
 
 	getMessage(data){
-		console.log('getMessage: ', data);
-		var messages = this.state.currentMessages;
-		messages.push(data.message);
-		this.setState({
-			currentMessages: messages
-		});
+        this.addMessageToHistory(data.message, data.userName);
 	}
+
+    addMessageToHistory(msg, username){
+        var messages = this.state.currentMessages;
+        var isSelfMessage = false;
+
+        if(typeof username == 'undefined'){
+            var username = this.state.connectedUserName;
+            isSelfMessage = true;
+        }
+
+        // first message with this user
+        if(typeof messages[username] == 'undefined'){
+            messages[username] = {
+                data: []
+            };
+        }
+
+        messages[username].data.push({
+            msg: msg,
+            isSelfMessage: isSelfMessage
+        });
+
+        this.setState({
+            currentMessages: messages
+        });
+
+        console.log('addMessageToHistory: ', messages);
+    }
 }
 
 
 class ChatApp extends Manager{
-
-	
 	sendMessageHandle(){
-		// console.log('ref: ', this.refs.messageInput.value);
 		this.sendMessage(this.refs.messageInput.value);
 		this.refs.messageInput.value = '';
 	}
@@ -127,7 +137,7 @@ class ChatApp extends Manager{
 						<div className="col-sm-8 messages-list">
 							<div className="col-sm-12">
 								<h2>Messages</h2>
-								<MessagesList userName={ this.userName } connectedUserName={ this.state.connectedUserName } messages={ this.state.currentMessages } />
+								<MessagesList userName={ this.userName } connectedUserName={ this.state.connectedUserName } messages={ this.state.currentMessages[this.state.connectedUserName] } />
 							</div>
 						</div>
 					</div>
@@ -177,12 +187,13 @@ class UsersList extends React.Component{
 class MessagesList extends React.Component{
 	render(){
 		var messages = [];
-		console.log('this.props.messages: ', this.props.messages);
 		if(typeof this.props.messages != 'undefined'){
-			this.props.messages.forEach((message, index) => {
-				messages.push(
-					<li key={ index }><span className="user-name">{ this.props.connectedUserName }: </span>{ message }</li>
-				)
+			this.props.messages.data.forEach((messageData, index) => {
+                if(messageData.isSelfMessage){
+                    messages.push(<li key={ index } className="self-message"><span className="user-name">you: </span>{ messageData.msg }</li>)
+                } else {
+                    messages.push(<li key={ index }><span className="user-name">{ this.props.connectedUserName }: </span>{ messageData.msg }</li>)
+                }
 			});
 		}
 		
