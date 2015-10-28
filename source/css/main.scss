@@ -3,33 +3,69 @@ $color-1: #3A9AD9;
 $color-2: #354458;
 $color-3: #28A8A1;
 
-body{
-	background-color: $color-2;
-	color: #fff;
+body {
+  background-color: $color-2;
+  color: #fff;
 }
 
-#chatApp{
-	.row:first-of-type{
-		background-color: $color-1;
-	}
+#chatApp {
 
-	.users-list{
-		background-color: $color-3;
-		min-height: 400px;
-	}
+  .row:first-of-type {
+    background-color: $color-1;
+  }
 
-	.messages-list{
-		
-	}
+  .users-list {
+    background-color: $color-3;
+    min-height: 400px;
+    padding-top: 20px;
 
-	.user-input{
-		margin-top: 20px;
-		float: right;
+    ul {
+      padding-left: 0px;
+      list-style: none;
 
-		input{
-			height: 38px;
-			margin-right: 10px;
-			color: $color-0;
-		}
-	}
+      li {
+        position: relative;
+        padding: 3px;
+        border-radius: 2px;
+        border-bottom: 1px solid darken($color-3, 10);
+        color: darken($color-3, 10);
+
+        &:hover {
+          background: darken($color-3, 5);
+          cursor: pointer;
+        }
+
+        &.connected-user {
+          background: darken($color-3, 10);
+          color: #fff;
+        }
+
+        &.notification:after{
+          content: '';
+          position: absolute;
+          right: 3px;
+          top: 10px;
+          width: 10px;
+          height: 10px;
+          border-radius: 50%;
+          border: 2px solid darken($color-3, 10);
+        }
+      }
+    }
+  }
+
+  .messages-list {
+    padding-top: 20px;
+  }
+
+  .user-input {
+    margin-top: 20px;
+    float: right;
+
+    input {
+      height: 38px;
+      margin-right: 10px;
+      color: $color-0;
+    }
+  }
 }

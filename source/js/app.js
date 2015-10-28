@@ -10,7 +10,8 @@ class Manager extends React.Component{
 			initChat: false,
 			allConnectedUsers: [],
 			connectedUserName: '',
-			currentMessages: []
+			currentMessages: [],
+            allNotifications: []
 		};
 
 		io.on('connect', () => {
@@ -53,9 +54,6 @@ class Manager extends React.Component{
 		this.peer.on('connection', (conn) => {
 			conn.on('open', () => {
 				console.log('on connection -> open: ', conn);
-                this.setState({
-                    connectedUserName: conn.peer
-                });
 
 				conn.on('data', (data) => {
 					this.getMessage(data);
@@ -63,6 +61,32 @@ class Manager extends React.Component{
 			});
 		});
 	}
+
+    addNotification(notification){
+        if(this.state.connectedUserName != notification){
+            var notifications = this.state.allNotifications;
+            if(notifications.indexOf(notification) == -1){
+                notifications.push(notification);
+                this.setState({
+                    allNotifications: notifications
+                });
+                console.log('new notification added -> notifications: ', notifications);
+            }
+        }
+    }
+
+    removeNotification(notification){
+        var notifications = this.state.allNotifications;
+        notifications.forEach((notify, index) => {
+            if(notify == notification){
+                notifications.splice(index, 1);
+                this.setState({
+                    allNotifications: notifications
+                });
+                return;
+            }
+        });
+    }
 
 	changeConnectedUser(peerID){
 		var conn = this.peer.connect(peerID);
@@ -73,20 +97,25 @@ class Manager extends React.Component{
 			this.setState({
 				connectedUserName: conn.peer
 			});
+
+            this.removeNotification(conn.peer);
 		});
 	}
 
 	sendMessage(message){
-		this.connectedPeer.send({
-			message: message,
-			userName: this.userName
-		});
+        if(message != ''){
+            this.connectedPeer.send({
+                message: message,
+                userName: this.userName
+            });
 
-        this.addMessageToHistory(message);
+            this.addMessageToHistory(message);
+        }
 	}
 
 	getMessage(data){
         this.addMessageToHistory(data.message, data.userName);
+        this.addNotification(data.userName);
 	}
 
     addMessageToHistory(msg, username){
@@ -131,19 +160,20 @@ class ChatApp extends Manager{
 				<div className="container-fluid">
 					<div className="row">
 						<div className="col-sm-4 users-list">
-							<h2>Connected users</h2>
-							<UsersList user={ this.userName } users={ this.state.allConnectedUsers } changeConnectedUser={ (peerID) => this.changeConnectedUser(peerID) } />
+                            <h6>Hello {this.userName }</h6>
+                            <hr/>
+							<h6>Connected users</h6>
+							<UsersList user={ this.userName } users={ this.state.allConnectedUsers } allNotifications={ this.state.allNotifications } connectedUserName={ this.state.connectedUserName } changeConnectedUser={ (peerID) => this.changeConnectedUser(peerID) } />
 						</div>
 						<div className="col-sm-8 messages-list">
 							<div className="col-sm-12">
-								<h2>Messages</h2>
-								<MessagesList userName={ this.userName } connectedUserName={ this.state.connectedUserName } messages={ this.state.currentMessages[this.state.connectedUserName] } />
+								<MessagesList connectedUserName={ this.state.connectedUserName } messages={ this.state.currentMessages[this.state.connectedUserName] } />
 							</div>
 						</div>
 					</div>
 					<div className="row">
 						<div className="col-sm-8 user-input">
-							<input ref="messageInput" className="col-sm-8" type="text" />
+							<input ref="messageInput" className="col-sm-8" type="text" onKeyDown={ (evt) => { if(evt.keyCode == 13) this.sendMessageHandle() } } />
 							<button className="btn btn-primary" onClick={ () => this.sendMessageHandle() }>Send message</button>
 						</div>
 					</div>
@@ -168,10 +198,16 @@ class UsersList extends React.Component{
 		var listItems = [];
 		if(typeof this.props.users != 'undefined'){
 			this.props.users.forEach((user, index) => {
-				if(user.peerID == this.props.user){
-					listItems.push(<li key={ index } onClick={ () => this.changeConnectedUser(user.peerID) } className="current-user">your name: { user.peerID }</li>);	
-				} else {
-					listItems.push(<li key={ index } onClick={ () => this.changeConnectedUser(user.peerID) }>{ user.peerID }</li>);	
+				if(user.peerID != this.props.user){
+
+                    let classes = this.props.connectedUserName == user.peerID? 'connected-user': '';
+                    console.log('this.props.allNotifications: ', this.props.allNotifications);
+                    console.log('user.peerID: ', user.peerID);
+                    console.log('this.props.allNotifications.indexOf(this.props.user): ', this.props.allNotifications.indexOf(user.peerID));
+                    if(this.props.allNotifications.indexOf(user.peerID) != -1){
+                        classes += ' notification';
+                    }
+					listItems.push(<li key={ index } onClick={ () => this.changeConnectedUser(user.peerID) } className={ classes }>{ user.peerID }</li>);
 				}
 			})
 		}
@@ -196,15 +232,20 @@ class MessagesList extends React.Component{
                 }
 			});
 		}
-		
-		return (
-			<div>
-				<h4>Hello { this.props.userName }</h4>
-				<ul>
-					{ messages }
-				</ul>
-			</div>
-		)
+
+        if(this.props.connectedUserName == ''){
+            return <h4>Choose someone to talk</h4>
+        } else {
+            return (
+                <div>
+                    <h4>@{ this.props.connectedUserName }</h4>
+                    <ul>
+                        { messages }
+                    </ul>
+                </div>
+            )
+        }
+
 	}
 }
 
