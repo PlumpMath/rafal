@@ -18,6 +18,7 @@ export default class Manager extends React.Component{
             console.log('io connected');
             io.on(EventsType.USER_CONNECTED, (connectedUserName) => {
                 if(this.userName == connectedUserName){
+                    this.notify('Hello: ' + this.userName);
                     return;
                 }
 
@@ -30,6 +31,20 @@ export default class Manager extends React.Component{
         });
     }
 
+    notify(notificationMessage){
+        if (!("Notification" in window)) {
+            console.log('Notifications are not supported');
+        } else if (Notification.permission === "granted") {
+            new Notification(notificationMessage);  
+        } else if (Notification.permission !== 'denied') {
+            Notification.requestPermission(function (permission) {
+                if (permission === "granted") {
+                    new Notification(notificationMessage);  
+                }
+            });
+        }   
+    }
+
     onNewUserConnected(userName){
         var allConnectedUsers = this.state.allConnectedUsers;
         allConnectedUsers.push({ peerID: userName });
@@ -37,6 +52,7 @@ export default class Manager extends React.Component{
             allConnectedUsers: allConnectedUsers
         });
         console.log('onNewUserConnected: ', allConnectedUsers);
+        this.notify('New user connected: ' + userName);
     }
 
     onUserDisconnected(userName){
@@ -52,6 +68,7 @@ export default class Manager extends React.Component{
         });
 
         console.log('onUserDisconnected: ', allConnectedUsers);
+        this.notify('User disconnected: ' + userName);
     }
 
     getAllUsersList(){
@@ -105,6 +122,7 @@ export default class Manager extends React.Component{
                     allNotifications: notifications
                 });
                 console.log('new notification added -> notifications: ', notifications);
+                this.notify('New message from: ' + notification);
             }
         }
     }
