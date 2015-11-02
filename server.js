@@ -15,9 +15,9 @@ peerServer.on('connection', function(peerID){
 	allConnectedPeers.push( { peerID: peerID } );
 
 	io.emit(EventsType.USER_CONNECTED, peerID);
-	io.emit(EventsType.ALL_CONNECTED_PEERS_LIST, allConnectedPeers);
+	// io.emit(EventsType.ALL_CONNECTED_PEERS_LIST, allConnectedPeers);
 
-	console.log('connection allConnectedPeers: ', allConnectedPeers);
+	console.log('new user connected: ', peerID);
 });
 
 peerServer.on('disconnect', function(peerID, index){
@@ -33,3 +33,8 @@ peerServer.on('disconnect', function(peerID, index){
 });
 
 var allConnectedPeers = [];
+
+
+app.get('/api/allConnectedPeers', function(req, res){
+	return res.json(allConnectedPeers);
+});

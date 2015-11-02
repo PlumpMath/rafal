@@ -13,6 +13,7 @@
     "gulp": "^3.9.0",
     "gulp-sass": "^2.0.4",
     "gulp-sourcemaps": "^1.6.0",
+    "jquery": "^2.1.4",
     "peer": "^0.2.8",
     "react": "^0.14.0",
     "react-dom": "^0.14.0",

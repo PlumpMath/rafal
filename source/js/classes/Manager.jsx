@@ -1,6 +1,7 @@
 import React from 'react';
 import EventsType from './EventsType';
 var io = require('socket.io-client')();
+var $ = require('jquery');
 
 export default class Manager extends React.Component{
     constructor(){
@@ -16,18 +17,51 @@ export default class Manager extends React.Component{
         io.on('connect', () => {
             console.log('io connected');
             io.on(EventsType.USER_CONNECTED, (connectedUserName) => {
-
                 if(this.userName == connectedUserName){
                     return;
                 }
 
-                console.log('USER_CONNECTED: ', connectedUserName);
+                this.onNewUserConnected(connectedUserName);
             });
 
-            io.on(EventsType.ALL_CONNECTED_PEERS_LIST, (allUsers) => {
-                console.log('ALL_CONNECTED_PEERS_LIST: ', allUsers);
-                this.setState({ allConnectedUsers: allUsers })
+            io.on(EventsType.USER_DISCONNECTED, (disconnectedUserName) => {
+                this.onUserDisconnected(disconnectedUserName);
             });
+        });
+    }
+
+    onNewUserConnected(userName){
+        var allConnectedUsers = this.state.allConnectedUsers;
+        allConnectedUsers.push({ peerID: userName });
+        this.setState({
+            allConnectedUsers: allConnectedUsers
+        });
+        console.log('onNewUserConnected: ', allConnectedUsers);
+    }
+
+    onUserDisconnected(userName){
+        var allConnectedUsers = this.state.allConnectedUsers;
+        allConnectedUsers.forEach((user, index) => {
+            if(userName == user.peerID){
+                allConnectedUsers.splice(index, 1);
+            }
+        });
+        
+        this.setState({
+            allConnectedUsers: allConnectedUsers
+        });
+
+        console.log('onUserDisconnected: ', allConnectedUsers);
+    }
+
+    getAllUsersList(){
+        console.log('getAllUsersList: ');
+        $.ajax({
+            url: '/api/allConnectedPeers',
+            success: (data) => {
+                console.log('success: ', data);
+                this.setState({ allConnectedUsers: data });
+            }
         });
     }
 
@@ -46,6 +80,7 @@ export default class Manager extends React.Component{
         });
 
         this.connectToServer();
+        this.getAllUsersList();
     }
 
     connectToServer(){
