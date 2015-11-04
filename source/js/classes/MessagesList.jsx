@@ -2,19 +2,34 @@ import React from 'react';
 
 export default class MessagesList extends React.Component{
 
-    boldFilter(text){
-        if(text.indexOf('*') !== -1){
-            var textArray = text.split('*');
+    textFormatFilter(text){
+        var formattedText = text;
+        if(formattedText.indexOf('*') !== -1){
+            var textArray = formattedText.split('*');
             textArray.forEach((string, index) => {
                 if( index % 2 && string.length ){
                     textArray[index] = '<strong>' + string + '</strong>';
                 }
             });
-            var formattedText = textArray.join('');
-            return formattedText;
+            formattedText = textArray.join('');
         }
 
-        return text;
+        if(formattedText.indexOf('_') !== -1){
+            var textArray = formattedText.split('_');
+            textArray.forEach((string, index) => {
+                if( index % 2 && string.length ){
+                    textArray[index] = '<cite>' + string + '</cite>';
+                }
+            });
+            formattedText = textArray.join('');
+        }
+
+        if(formattedText.indexOf('@') !== -1){
+            var notifyUsers = formattedText.match(/@\w*/g);
+            console.log('notifyUsers: ', notifyUsers);
+        }
+
+        return formattedText;
     }
 
     render(){
@@ -22,7 +37,7 @@ export default class MessagesList extends React.Component{
         if(typeof this.props.messages != 'undefined'){
             this.props.messages.data.forEach((messageData, index) => {
 
-                var message = this.boldFilter(messageData.msg);
+                var message = this.textFormatFilter(messageData.msg);
 
                 if(messageData.isSelfMessage){
                     messages.push(
