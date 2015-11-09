@@ -1,0 +1,25 @@
+@import "foundation/foundation";
+@include foundation-global-styles;
+@include foundation-flex-grid;
+@include foundation-button;
+@include foundation-forms;
+
+$color-0: #333;
+$color-1: #3A9AD9;
+$color-2: #354458;
+$color-2b: darken($color-2, 5);
+$color-3: #28A8A1;
+
+$spacing: 25px;
+
+@mixin flexHeight(){
+  height: 100vh;
+  display: flex;
+  flex-flow: column nowrap;
+}
+
+@mixin headerStyle(){
+  line-height: 2.5em;
+  margin: 0px;
+  border-bottom: 1px solid $color-3;
+}

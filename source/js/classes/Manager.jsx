@@ -83,8 +83,14 @@ export default class Manager extends React.Component{
     }
 
     promptForNickName(){
-        this.userName = prompt('your name: ');
-        if(!this.userName.length){
+        if( localStorage.getItem('userName') ){
+            console.log('userName: ', localStorage.getItem('userName'));
+            this.userName = localStorage.getItem('userName');
+        } else {
+            this.userName = prompt('your name: ');
+        }
+
+        if( !this.userName.length ){
             this.promptForNickName();
         } else {
             this.initChat();
@@ -95,6 +101,8 @@ export default class Manager extends React.Component{
         this.setState({
             initChat: true
         });
+
+        // localStorage.setItem('userName', this.userName);
 
         this.connectToServer();
         this.getAllUsersList();

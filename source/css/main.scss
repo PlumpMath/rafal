@@ -1,71 +1,92 @@
-$color-0: #333;
-$color-1: #3A9AD9;
-$color-2: #354458;
-$color-3: #28A8A1;
+@import 'mixins';
 
 body {
   background-color: $color-2;
   color: #fff;
 }
 
-#chatApp {
+ul{
+  margin: 0px;
+  padding: 0px;
+  overflow: auto;
+}
 
-  .row:first-of-type {
-    background-color: $color-1;
-  }
+#chatApp{
+  .users-column{
+    @include flex-grid-column(4);
+    @include flexHeight;
+    padding-bottom: $spacing;
 
-  .users-list {
-    background-color: $color-3;
-    min-height: 400px;
-    padding-top: 20px;
+    h2{
+      @include headerStyle;
+    }
 
-    ul {
-      padding-left: 0px;
-      list-style: none;
+    h4{
+      margin: 5px 0px;
+    }
 
-      li {
-        position: relative;
-        padding: 3px;
-        border-radius: 2px;
-        border-bottom: 1px solid darken($color-3, 10);
-        color: darken($color-3, 10);
+    ul{
+      li{
+        padding: 2px 10px;
+        border-left: 2px solid transparent;
 
-        &:hover {
-          background: darken($color-3, 5);
+        &.notification, &.connected-user{
+          border-color: $color-3;
+        }
+
+        &:hover, &.connected-user{
+          background-color: $color-2b;
           cursor: pointer;
-        }
-
-        &.connected-user {
-          background: darken($color-3, 10);
-          color: #fff;
-        }
-
-        &.notification:after{
-          content: '';
-          position: absolute;
-          right: 3px;
-          top: 10px;
-          width: 10px;
-          height: 10px;
-          border-radius: 50%;
-          border: 2px solid darken($color-3, 10);
         }
       }
     }
   }
 
-  .messages-list {
-    padding-top: 20px;
-  }
+  .messages-column{
+    @include flex-grid-column(8);
+    @include flexHeight;
+    padding-bottom: $spacing;
 
-  .user-input {
-    margin-top: 20px;
-    float: right;
+    h2.connected-user{
+      @include headerStyle;
+      border-color: $color-2b;
+    }
 
-    input {
-      height: 38px;
-      margin-right: 10px;
-      color: $color-0;
+    ul.messages{
+      height: 100%;
+      padding-top: 5px;
+
+      .user-name{
+        color: $color-3;
+        font-weight: bold;
+      }
+
+      .self-message{
+        .user-name{
+          color: $color-2b;
+        }
+      }      
+    }
+
+    .user-input{
+      @include flex-grid-row;
+      margin: 5px 0px 0px;
+
+      input{
+        @include flex-grid-column(8);
+        margin: 0px;
+        border: none;
+        box-shadow: none;
+        color: $color-2b;
+      }
+
+      button{
+        @include flex-grid-column(4);
+        margin: 0px;
+        border: none;
+        background-color: $color-3;
+      }
     }
   }
 }
+

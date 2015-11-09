@@ -42,33 +42,27 @@ export default class MessagesList extends React.Component{
                 if(messageData.isSelfMessage){
                     messages.push(
                         <li key={ index } className="self-message">
-                            <span className="user-name">you: </span>
+                            <span className="user-name">> </span>
                             <span dangerouslySetInnerHTML={{__html: message}} />
                         </li>
                     );
                 } else {
                     messages.push(
                         <li key={ index }>
-                            <span className="user-name">{ this.props.connectedUserName }: </span>
+                            <span className="user-name">> </span>
                             <span dangerouslySetInnerHTML={{__html: message}} />
                         </li>
                     );
                 }
             });
         }
-
-        if(this.props.connectedUserName == ''){
-            return <h4>Choose someone to talk</h4>
-        } else {
-            return (
-                <div>
-                    <h4>@{ this.props.connectedUserName }</h4>
-                    <ul>
-                        { messages }
-                    </ul>
-                </div>
-            )
-        }
+        
+        return (
+            <ul className="messages">
+                { messages }
+            </ul>
+        )
+        
 
     }
 }
