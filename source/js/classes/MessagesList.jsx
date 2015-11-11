@@ -34,35 +34,52 @@ export default class MessagesList extends React.Component{
 
     render(){
         var messages = [];
-        if(typeof this.props.messages != 'undefined'){
-            this.props.messages.data.forEach((messageData, index) => {
+        if(this.props.connectedUserName){
+            if(typeof this.props.messages != 'undefined'){
+                this.props.messages.data.forEach((messageData, index) => {
 
-                var message = this.textFormatFilter(messageData.msg);
+                    var message = this.textFormatFilter(messageData.msg);
 
-                if(messageData.isSelfMessage){
-                    messages.push(
-                        <li key={ index } className="self-message">
-                            <span className="user-name">> </span>
-                            <span dangerouslySetInnerHTML={{__html: message}} />
-                        </li>
-                    );
-                } else {
-                    messages.push(
-                        <li key={ index }>
-                            <span className="user-name">> </span>
-                            <span dangerouslySetInnerHTML={{__html: message}} />
-                        </li>
-                    );
-                }
+                    if(messageData.isSelfMessage){
+                        messages.push(
+                            <li key={ index } className="self-message">
+                                <span className="user-name">> </span>
+                                <span dangerouslySetInnerHTML={{__html: message}} />
+                            </li>
+                        );
+                    } else {
+                        messages.push(
+                            <li key={ index }>
+                                <span className="user-name">> </span>
+                                <span dangerouslySetInnerHTML={{__html: message}} />
+                            </li>
+                        );
+                    }
+                });
+            }
+
+
+        } else {
+            var infoMessages = [
+                'Available text formatting - *<strong>bold</strong>* _<cite>italic</cite>_',
+                'User notifications are "work in progress" and displays only in console - @user'
+            ];
+            infoMessages.forEach((msg, index) => {
+                messages.push(
+                    <li key={ index } className="self-message">
+                        <span className="user-name">> </span>
+                        <span dangerouslySetInnerHTML={{__html: infoMessages[index]}} />
+                    </li>
+                );
             });
         }
-        
+
         return (
             <ul className="messages">
                 { messages }
             </ul>
         )
         
-
+        
     }
 }

@@ -7,18 +7,16 @@ export default class UsersList extends React.Component{
 
     render(){
         var listItems = [];
+        var infoClasses = this.props.connectedUserName? 'info' : 'connected-user';
+        listItems.push(<li key="-1" onClick={ () => this.changeConnectedUser('#info') } className={ infoClasses }>#info</li>);
         if(typeof this.props.users != 'undefined'){
             this.props.users.forEach((user, index) => {
                 if(user.peerID != this.props.user){
-
                     let classes = this.props.connectedUserName == user.peerID? 'connected-user': '';
-                    console.log('this.props.allNotifications: ', this.props.allNotifications);
-                    console.log('user.peerID: ', user.peerID);
-                    console.log('this.props.allNotifications.indexOf(this.props.user): ', this.props.allNotifications.indexOf(user.peerID));
                     if(this.props.allNotifications.indexOf(user.peerID) != -1){
                         classes += ' notification';
                     }
-                    listItems.push(<li key={ index } onClick={ () => this.changeConnectedUser(user.peerID) } className={ classes }>{ user.peerID }</li>);
+                    listItems.push(<li key={ index } onClick={ () => this.changeConnectedUser(user.peerID) } className={ classes }>@{ user.peerID }</li>);
                 }
             })
         }

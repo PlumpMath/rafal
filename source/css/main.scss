@@ -44,6 +44,24 @@ ul{
 
     h2{
       @include headerStyle;
+
+      &:after{
+        content: 'logout?';
+        font-size: 16px;
+        color: $color-3;
+        display: inline-block;
+        opacity: 0;
+        transition: all 0.3s ease;
+      }
+
+      &:hover{
+        cursor: pointer;
+
+        &:after{
+          opacity: 1;
+          transform: translateX(20px);
+        }
+      }
     }
 
     h4{
@@ -81,16 +99,23 @@ ul{
       height: 100%;
       padding-top: 5px;
 
-      .user-name{
-        color: $color-3;
-        font-weight: bold;
-      }
+      li{
+        position: relative;
+        padding-left: 15px;
 
-      .self-message{
         .user-name{
-          color: $color-2b;
+          color: $color-3;
+          font-weight: bold;
+          position: absolute;
+          left: 0px;
         }
-      }      
+
+        &.self-message{
+            .user-name{
+              color: $color-2b;
+            }
+          }  
+        }
     }
 
     .user-input{
@@ -107,6 +132,10 @@ ul{
         @include flex-grid-column(4);
         @include clearBoxShadow;
         background-color: $color-3;
+      }
+
+      &.hide{
+        display: none;
       }
     }
   }

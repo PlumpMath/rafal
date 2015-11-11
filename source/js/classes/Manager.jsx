@@ -10,7 +10,7 @@ export default class Manager extends React.Component{
             userName: null,
             loggedIn: false,
             allConnectedUsers: [],
-            connectedUserName: '',
+            connectedUserName: null,
             currentMessages: [],
             allNotifications: []
         };
@@ -64,9 +64,10 @@ export default class Manager extends React.Component{
             }
         });
         
-        this.setState({
-            allConnectedUsers: allConnectedUsers
-        });
+        this.setState({ allConnectedUsers: allConnectedUsers });
+        if(userName == this.state.connectedUserName){
+            this.changeConnectedUser('#info');
+        }
 
         // console.log('onUserDisconnected: ', allConnectedUsers);
         this.notify('User disconnected: ' + userName);
@@ -124,17 +125,21 @@ export default class Manager extends React.Component{
     }
 
     changeConnectedUser(peerID){
-        var conn = this.peer.connect(peerID);
-        conn.on('open', () => {
-            // console.log('changed user: ', conn.peer);
-            this.connectedPeer = conn;
+        if(peerID == '#info'){
+            this.setState({ connectedUserName: null });
+        } else {
+            var conn = this.peer.connect(peerID);
+            conn.on('open', () => {
+                // console.log('changed user: ', conn.peer);
+                this.connectedPeer = conn;
 
-            this.setState({
-                connectedUserName: conn.peer
+                this.setState({
+                    connectedUserName: conn.peer
+                });
+
+                this.removeNotification(conn.peer);
             });
-
-            this.removeNotification(conn.peer);
-        });
+        }
     }
 
     sendMessage(message){
