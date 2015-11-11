@@ -19,9 +19,12 @@ $spacing: 25px;
 }
 
 @mixin headerStyle(){
-  	line-height: 2.5em;
 	margin: 0px;
 	border-bottom: 1px solid $color-3;
+
+	@include breakpoint(large up){
+		line-height: 2.5em;
+	}
 }
 
 @mixin clearBoxShadow(){

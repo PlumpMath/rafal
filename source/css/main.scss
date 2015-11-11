@@ -38,26 +38,43 @@ ul{
   }
 
   .users-column{
-    @include flex-grid-column(4);
-    @include flexHeight;
+    @include flex-grid-column(12);
     padding-bottom: $spacing;
 
     h2{
       @include headerStyle;
 
-      &:after{
-        content: 'logout?';
-        font-size: 16px;
-        color: $color-3;
-        display: inline-block;
-        opacity: 0;
-        transition: all 0.3s ease;
-      }
-
       &:hover{
         cursor: pointer;
+      }
 
+      @include breakpoint(small only){
+        text-align: center;
+
+        span{
+          display: block;
+        }
+
+        &:before{
+          content: "mobile version isn't perfect yet";
+          font-size: 12px;
+          color: $color-3;
+        }
+      }
+
+      @include breakpoint(large up){
         &:after{
+          content: 'logout?';
+          position: absolute;
+          font-size: 16px;
+          color: $color-3;
+          display: inline-block;
+          opacity: 0;
+          transition: all 0.3s ease;
+          margin-top: 3px;
+        }
+
+        &:hover:after{
           opacity: 1;
           transform: translateX(20px);
         }
@@ -86,8 +103,7 @@ ul{
   }
 
   .messages-column{
-    @include flex-grid-column(8);
-    @include flexHeight;
+    @include flex-grid-column(12);
     padding-bottom: $spacing;
 
     h2.connected-user{
@@ -123,19 +139,43 @@ ul{
       margin: 5px 0px 0px;
 
       input{
-        @include flex-grid-column(8);
+        @include flex-grid-column(12);
         @include clearBoxShadow;
         color: $color-2b;
       }
 
       button{
-        @include flex-grid-column(4);
+        @include flex-grid-column(12);
         @include clearBoxShadow;
         background-color: $color-3;
       }
 
       &.hide{
         display: none;
+      }
+    }
+  }
+}
+
+@include breakpoint(medium up){
+  #chatApp{
+    .users-column{
+      @include flex-grid-column(4);
+      @include flexHeight;
+    }
+
+    .messages-column{
+      @include flex-grid-column(8);
+      @include flexHeight;
+
+      .user-input{
+        input{
+          @include flex-grid-column(8);
+        }
+
+        button{
+          @include flex-grid-column(4);
+        }
       }
     }
   }
