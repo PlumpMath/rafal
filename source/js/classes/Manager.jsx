@@ -7,7 +7,8 @@ export default class Manager extends React.Component{
     constructor(){
         super();
         this.state = {
-            initChat: false,
+            userName: null,
+            loggedIn: false,
             allConnectedUsers: [],
             connectedUserName: '',
             currentMessages: [],
@@ -15,10 +16,10 @@ export default class Manager extends React.Component{
         };
 
         io.on('connect', () => {
-            console.log('io connected');
+            // console.log('io connected');
             io.on(EventsType.USER_CONNECTED, (connectedUserName) => {
-                if(this.userName == connectedUserName){
-                    this.notify('Hello: ' + this.userName);
+                if(this.state.userName == connectedUserName){
+                    this.notify('Hello: ' + this.state.userName);
                     return;
                 }
 
@@ -33,7 +34,7 @@ export default class Manager extends React.Component{
 
     notify(notificationMessage){
         if (!("Notification" in window)) {
-            console.log('Notifications are not supported');
+            // console.log('Notifications are not supported');
         } else if (Notification.permission === "granted") {
             new Notification(notificationMessage);  
         } else if (Notification.permission !== 'denied') {
@@ -51,7 +52,7 @@ export default class Manager extends React.Component{
         this.setState({
             allConnectedUsers: allConnectedUsers
         });
-        console.log('onNewUserConnected: ', allConnectedUsers);
+        // console.log('onNewUserConnected: ', allConnectedUsers);
         this.notify('New user connected: ' + userName);
     }
 
@@ -67,52 +68,26 @@ export default class Manager extends React.Component{
             allConnectedUsers: allConnectedUsers
         });
 
-        console.log('onUserDisconnected: ', allConnectedUsers);
+        // console.log('onUserDisconnected: ', allConnectedUsers);
         this.notify('User disconnected: ' + userName);
     }
 
     getAllUsersList(){
-        console.log('getAllUsersList: ');
+        // console.log('getAllUsersList: ');
         $.ajax({
             url: '/api/allConnectedPeers',
             success: (data) => {
-                console.log('success: ', data);
+                // console.log('success: ', data);
                 this.setState({ allConnectedUsers: data });
             }
         });
     }
 
-    promptForNickName(){
-        if( localStorage.getItem('userName') ){
-            console.log('userName: ', localStorage.getItem('userName'));
-            this.userName = localStorage.getItem('userName');
-        } else {
-            this.userName = prompt('your name: ');
-        }
-
-        if( !this.userName.length ){
-            this.promptForNickName();
-        } else {
-            this.initChat();
-        }
-    }
-
-    initChat(){
-        this.setState({
-            initChat: true
-        });
-
-        // localStorage.setItem('userName', this.userName);
-
-        this.connectToServer();
-        this.getAllUsersList();
-    }
-
     connectToServer(){
-        this.peer = new Peer(this.userName, { host: location.hostname, port: 9000, path: '/chat'});
+        this.peer = new Peer(this.state.userName, { host: location.hostname, port: 9000, path: '/chat'});
         this.peer.on('connection', (conn) => {
             conn.on('open', () => {
-                console.log('on connection -> open: ', conn);
+                // console.log('on connection -> open: ', conn);
 
                 conn.on('data', (data) => {
                     this.getMessage(data);
@@ -129,7 +104,7 @@ export default class Manager extends React.Component{
                 this.setState({
                     allNotifications: notifications
                 });
-                console.log('new notification added -> notifications: ', notifications);
+                // console.log('new notification added -> notifications: ', notifications);
                 this.notify('New message from: ' + notification);
             }
         }
@@ -151,7 +126,7 @@ export default class Manager extends React.Component{
     changeConnectedUser(peerID){
         var conn = this.peer.connect(peerID);
         conn.on('open', () => {
-            console.log('changed user: ', conn.peer);
+            // console.log('changed user: ', conn.peer);
             this.connectedPeer = conn;
 
             this.setState({
@@ -166,7 +141,7 @@ export default class Manager extends React.Component{
         if(message != ''){
             this.connectedPeer.send({
                 message: message,
-                userName: this.userName
+                userName: this.state.userName
             });
 
             this.addMessageToHistory(message);
@@ -203,6 +178,6 @@ export default class Manager extends React.Component{
             currentMessages: messages
         });
 
-        console.log('addMessageToHistory: ', messages);
+        // console.log('addMessageToHistory: ', messages);
     }
 }

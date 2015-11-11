@@ -13,13 +13,20 @@ $color-3: #28A8A1;
 $spacing: 25px;
 
 @mixin flexHeight(){
-  height: 100vh;
-  display: flex;
-  flex-flow: column nowrap;
+	height: 100vh;
+	display: flex;
+	flex-flow: column nowrap;
 }
 
 @mixin headerStyle(){
-  line-height: 2.5em;
-  margin: 0px;
-  border-bottom: 1px solid $color-3;
+  	line-height: 2.5em;
+	margin: 0px;
+	border-bottom: 1px solid $color-3;
+}
+
+@mixin clearBoxShadow(){
+	margin: 0px;
+	border: none;
+	box-shadow: none;
+	outline: none;
 }

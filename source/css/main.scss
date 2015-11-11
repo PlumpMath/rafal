@@ -12,6 +12,31 @@ ul{
 }
 
 #chatApp{
+  .login-wrap{
+    @include flex-grid-row;
+    justify-content: center;
+    width: 100%;
+    max-width: 400px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+
+    input{
+      @include flex-grid-column(8);
+      @include clearBoxShadow;
+      background: none;
+      border-bottom: 1px solid $color-3;
+      color: #fff;
+    }
+
+    button{
+      @include flex-grid-column(4);
+      @include clearBoxShadow;
+      background-color: $color-3;
+    }
+  }
+
   .users-column{
     @include flex-grid-column(4);
     @include flexHeight;
@@ -74,16 +99,13 @@ ul{
 
       input{
         @include flex-grid-column(8);
-        margin: 0px;
-        border: none;
-        box-shadow: none;
+        @include clearBoxShadow;
         color: $color-2b;
       }
 
       button{
         @include flex-grid-column(4);
-        margin: 0px;
-        border: none;
+        @include clearBoxShadow;
         background-color: $color-3;
       }
     }

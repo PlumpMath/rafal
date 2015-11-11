@@ -4,19 +4,36 @@ import UsersList from './UsersList.jsx';
 import MessagesList from './MessagesList.jsx';
 
 export default class ChatApp extends Manager{
+    login(){
+        var userName = this.refs.loginInput.value;
+        if( userName.length ){
+            this.initChat(userName);
+        }
+    }
+
+    initChat(user){
+        this.setState({
+            loggedIn: true,
+            userName: user
+        }, () => {
+            this.connectToServer();
+            this.getAllUsersList();
+        });
+    }
+
     sendMessageHandle(){
         this.sendMessage(this.refs.messageInput.value);
         this.refs.messageInput.value = '';
     }
 
     render(){
-        if(this.state.initChat){
+        if(this.state.loggedIn){
             return (
                 <div className="row">
                     <div className="users-column">
-                        <h2>Logged as {this.userName }</h2>
+                        <h2>Logged as {this.state.userName }</h2>
                         <h4>Connected users</h4>
-                        <UsersList user={ this.userName } users={ this.state.allConnectedUsers } allNotifications={ this.state.allNotifications } connectedUserName={ this.state.connectedUserName } changeConnectedUser={ (peerID) => this.changeConnectedUser(peerID) } />
+                        <UsersList user={ this.state.userName } users={ this.state.allConnectedUsers } allNotifications={ this.state.allNotifications } connectedUserName={ this.state.connectedUserName } changeConnectedUser={ (peerID) => this.changeConnectedUser(peerID) } />
                     </div>
                     <div className="messages-column">
                         <h2 className="connected-user">@{ this.state.connectedUserName }</h2>
@@ -30,9 +47,12 @@ export default class ChatApp extends Manager{
             );
         } else {
             return (
-                <button className="button" onClick={ () => this.promptForNickName() }>
-                    Open chat
-                </button>
+                <div className='login-wrap'>
+                    <input ref="loginInput" type="text" onKeyDown={ (evt) => { if(evt.keyCode == 13) this.login() } } />
+                    <button className="button" onClick={ () => this.login() }>
+                        Login
+                    </button>
+                </div>
             )
         }
     }
